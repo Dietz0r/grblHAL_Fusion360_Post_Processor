@@ -13,6 +13,10 @@
 /*
 Add change notes here!!!! DO NOT FORGET OR YOU WILL FORGET
 
+30.10.2025
+1. Added P parameter output for G73 chip breaking cycle based on Fusion 360's peck retract distance
+2. Added option "Use $28 for chip breaking retract distance" to revert to old firmware-based behavior
+
 18.02.25
 1. Improved return position behaviour and code generation
 2. Added initial positioning move option
@@ -182,6 +186,14 @@ properties = {
     group: "Safety",
     type: "integer",
     value: 2,
+    scope: "post"
+  },
+  useFirmwareDrillRetract: {
+    title: "Use $28 for chip breaking retract distance",
+    description: "When enabled, G73 will use the firmware $28 setting for retract distance instead of outputting the P parameter from Fusion 360.",
+    group: "formats",
+    type: "boolean",
+    value: false,
     scope: "post"
   },
   fourthAxisAround: {
@@ -1074,6 +1086,7 @@ function onCyclePoint(x, y, z) {
           gRetractModal.format(98), gAbsIncModal.format(90), gCycleModal.format(73),
           getCommonCycle(x, y, z, cycle.retract),
           "Q" + xyzFormat.format(cycle.incrementalDepth),
+          conditional(!getProperty("useFirmwareDrillRetract") && cycle.chipBreakDistance, "P" + xyzFormat.format(cycle.chipBreakDistance)),
           feedOutput.format(F)
         );
       }
