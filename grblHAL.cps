@@ -12,6 +12,9 @@
 
 /*
 Add change notes here!!!! DO NOT FORGET OR YOU WILL FORGET
+20.20.25
+1. Added option to use canned drilling cycles (or not use)
+
 12.08.25
 1. Added Option to enable/disable arc generation
 
@@ -289,6 +292,13 @@ properties = {
     description: "Enable output of G2 and G3 Arc commands.\nUses linear circular interpolation instead.",
     type       : "boolean",
     value      : true,
+    scope      : "post"
+  },
+  useCannedCycles: {
+    title      : "Use canned drilling cycles",
+    description: "Enable output of canned drilling cycle G-codes (G81, G83, etc.).\nWhen disabled, drilling operations are expanded into individual movement commands.",
+    type       : "boolean",
+    value      : false,
     scope      : "post"
   }
 };
@@ -996,6 +1006,9 @@ function onSpindleSpeed(spindleSpeed) {
 /* ADD CANNED CYCLES */
 function onCycle() {
     writeBlock(gPlaneModal.format(17));
+    if (!getProperty("useCannedCycles")) {
+      cycleExpanded = true;
+    }
 }
 
 function getCommonCycle(x, y, z, r) {
@@ -1739,7 +1752,6 @@ function setWorkPlane(abc) {
   setCurrentABC(abc); // required for machine simulation
 }
 // <<<<< INCLUDED FROM ../common/grbl.cps
-
 
 
 
